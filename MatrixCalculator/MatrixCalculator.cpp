@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include "Header.h"
 using namespace std;
 
 int main() {
@@ -49,6 +50,14 @@ int main() {
 
     cout << "Operation: " << operation << endl;
 
+    ErrorCode code = isMatrixCorrect(matrix1, matrix2, operation);
+    cout << static_cast<int>(code);
+
+    if (static_cast<int>(code) != 0) {
+        file.close();
+        return 1;
+    }
+
     file.close();
     return 0;
 }
@@ -73,4 +82,37 @@ vector<int> splitStringToInt(const string& str) {
         row.push_back(num);
     }
     return row;
+}
+
+// Функция для проверки матриц на корректность
+ErrorCode isMatrixCorrect(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2, std::string operation) {
+     // Проверка на размерность матриц
+    if (isMatrixSizeInvalid(matrix1) || isMatrixSizeInvalid(matrix2)) {
+        return ErrorCode::MatrixSizeOutOfRange;
+    }
+
+    // Проверка на то, не пропущены ли числа в матрице
+    if (hasMissingNumbers(matrix1) || hasMissingNumbers(matrix2)) {
+        return ErrorCode::MissingNumber;
+    }
+
+    return ErrorCode::NoError;
+}
+
+// Функция для проверки строк матрицы на присутствие всех чисел
+bool hasMissingNumbers(const std::vector<std::vector<int>>& matrix) {
+    int expectedCount = matrix.size() * matrix[0].size();
+    for (const auto& row : matrix) {
+        if (row.size() != matrix[0].size()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Функция для проверки размера матрицы
+bool isMatrixSizeInvalid(const std::vector<std::vector<int>>& matrix) {
+    int numRows = matrix.size();
+    int numCols = matrix[0].size();
+    return numRows > 50 || numCols > 50 || numRows == 0;
 }
