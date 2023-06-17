@@ -53,15 +53,82 @@ int main() {
     cout << "Operation: " << operation << endl;
 
     ErrorCode code = isMatrixCorrect(matrix1, matrix2, operation);
-    cout << static_cast<int>(code);
+    cout << static_cast<int>(code) << endl;
 
     if (static_cast<int>(code) != 0) {
         file.close();
         return 1;
     }
 
+    vector<vector<int>> result = operationsOnMatrices(matrix1, matrix2, operation);
+    cout << "Result:" << endl;
+    for (const auto& row : result) {
+        for (const auto& num : row) {
+            cout << num << ' ';
+        }
+        cout << endl;
+    }
+
     file.close();
     return 0;
+}
+
+// Функция для выполнения действий над матрицами
+std::vector<std::vector<int>> operationsOnMatrices(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2, std::string operation) {
+    if (operation == "+")
+        return matrixAddition(matrix1, matrix2);
+    if (operation == "-")
+        return matrixSubtraction(matrix1, matrix2);
+    if (operation == "&")
+        return multiplicationMatrixByNumber(matrix1, matrix2[0][0]);
+}
+
+// Функция для сложения матриц
+std::vector<std::vector<int>> matrixAddition(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2) {
+    int numRows = matrix1.size();
+    int numCols = matrix1[0].size();
+
+    std::vector<std::vector<int>> result(numRows, std::vector<int>(numCols));
+
+    for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j < numCols; j++) {
+            result[i][j] = matrix1[i][j] + matrix2[i][j];
+        }
+    }
+
+    return result;
+}
+
+// Функция для вычитания матриц
+std::vector<std::vector<int>> matrixSubtraction(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2) {
+    int numRows = matrix1.size();
+    int numCols = matrix1[0].size();
+
+    std::vector<std::vector<int>> result(numRows, std::vector<int>(numCols));
+
+    for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j < numCols; j++) {
+            result[i][j] = matrix1[i][j] - matrix2[i][j];
+        }
+    }
+
+    return result;
+}
+
+// Функция для умножения матрицы на число
+std::vector<std::vector<int>> multiplicationMatrixByNumber(const std::vector<std::vector<int>>& matrix, int number) {
+    int numRows = matrix.size();
+    int numCols = matrix[0].size();
+
+    std::vector<std::vector<int>> result(numRows, std::vector<int>(numCols));
+
+    for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j < numCols; j++) {
+            result[i][j] = matrix[i][j] * number;
+        }
+    }
+
+    return result;
 }
 
 // Функция для чтения матрицы из файла
@@ -192,7 +259,7 @@ bool areMatricesMultiplicable(const std::vector<std::vector<int>>& matrix1, cons
 
 // Функция для проверки возможности умножения матрицы на число
 bool abilityToMulMatrixByNumber(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2) {
-    return (matrix1[0].size() > 1 || matrix1.size() > 1) && matrix2[0].size() == 1;
+    return (matrix1[0].size() > 1 || matrix1.size() > 1) && matrix2[0].size() == 1 && matrix2.size() == 1;
 }
 
 // Функция для проверки матрицы на то, является ли она квадратом
