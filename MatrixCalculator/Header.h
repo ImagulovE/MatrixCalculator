@@ -44,3 +44,5 @@ std::vector<std::vector<double>> matrixTranspose(const std::vector<std::vector<d
 double matrixDeterminant(const std::vector<std::vector<double>>& matrix);
 // Функция для нахождения обратной матрицы
 std::vector<std::vector<double>> matrixInverse(const std::vector<std::vector<double>>& matrix);
+// Функция для записи результата в файл
+void writeResultToFile(const vector<vector<double>>& matrix, const string& filename);

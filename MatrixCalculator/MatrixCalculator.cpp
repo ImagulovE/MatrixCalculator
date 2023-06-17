@@ -7,9 +7,9 @@
 #include "Header.h"
 using namespace std;
 
-int main() {
+int main(const int argc, char** argv) {
     setlocale(LC_ALL, "Russian");
-    ifstream file("input.txt");
+    ifstream file(argv[1]);
     if (!file) {
         cout << "Неверно указан файл с входными данными. Возможно, файл не существует." << endl;
         return 1;
@@ -34,47 +34,36 @@ int main() {
         }
         getline(file, operation);
     }
- 
-    // Вывод матриц и действия для проверки правильности считывания данных
-    cout << "Matrix 1:" << endl;
-    for (const auto& row : matrix1) {
-        for (const auto& num : row) {
-            cout << num << ' ';
-        }
-        cout << endl;
-    }
-
-    cout << "Matrix 2:" << endl;
-    for (const auto& row : matrix2) {
-        for (const auto& num : row) {
-            cout << num << ' ';
-        }
-        cout << endl;
-    }
-
-    cout << "Operation: " << operation << endl;
 
     ErrorCode code = isMatrixCorrect(matrix1, matrix2, operation);
-    cout << static_cast<int>(code) << endl;
-
     if (static_cast<int>(code) != 0) {
         file.close();
+        cout << static_cast<int>(code) << endl;
         return 0;
     }
 
     vector<vector<double>> result = operationsOnMatrices(matrix1, matrix2, operation);
-
-    cout << "Result:" << endl;
-    for (const auto& row : result) {
-        for (const auto& num : row) {
-            cout << num << ' ';
-        }
-        cout << endl;
-    }
-
+    writeResultToFile(result, argv[2]);
 
     file.close();
     return 0;
+}
+
+// Функция для записи результата в файл
+void writeResultToFile(const vector<vector<double>>& matrix, const string& filename) {
+    ofstream outfile(filename);
+    if (outfile.is_open())
+    {
+        for (const auto& row : matrix)
+        {
+            for (const auto& element : row)
+            {
+                outfile << element << " ";
+            }
+            outfile << endl;
+        }
+        outfile.close();
+    }
 }
 
 // Функция для выполнения действий над матрицами
