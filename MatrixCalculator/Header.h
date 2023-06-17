@@ -36,3 +36,11 @@ std::vector<std::vector<int>> matrixAddition(const std::vector<std::vector<int>>
 std::vector<std::vector<int>> matrixSubtraction(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2);
 // Функция для умножения матрицы на число
 std::vector<std::vector<int>> multiplicationMatrixByNumber(const std::vector<std::vector<int>>& matrix, int number);
+// Функция для умножения матриц
+std::vector<std::vector<int>> matrixMultiplication(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2);
+// Функция для транспонирования матрицы
+std::vector<std::vector<int>> matrixTranspose(const std::vector<std::vector<int>>& matrix);
+// Функция для нахождения определителя матрицы
+double matrixDeterminant(const std::vector<std::vector<int>>& matrix);
+// Функция для нахождения обратной матрицы
+std::vector<std::vector<double>> matrixInverse(const std::vector<std::vector<int>>& matrix);

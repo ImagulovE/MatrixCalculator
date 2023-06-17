@@ -3,10 +3,12 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <cmath>
 #include "Header.h"
 using namespace std;
 
 int main() {
+    setlocale(LC_ALL, "Russian");
     ifstream file("input.txt");
     if (!file) {
         cout << "Неверно указан файл с входными данными. Возможно, файл не существует." << endl;
@@ -21,7 +23,7 @@ int main() {
     matrix2 = readMatrixFromFile(file);
     getline(file, operation);
 
-    if (matrix2.empty()) {
+    if (matrix2.empty() || matrix2[0].empty()) {
         file.clear();
         file.seekg(0, std::ios::beg);
         string line;
@@ -57,17 +59,29 @@ int main() {
 
     if (static_cast<int>(code) != 0) {
         file.close();
-        return 1;
+        return 0;
     }
 
     vector<vector<int>> result = operationsOnMatrices(matrix1, matrix2, operation);
+
+    if (operation == "det") {
+        double result = matrixDeterminant(matrix1);
+        cout << result << endl;
+        return 0;
+    }
+
+    vector<vector<double>> result1;
+    if (operation == "^-1")
+        result1 = matrixInverse(matrix1);
+
     cout << "Result:" << endl;
-    for (const auto& row : result) {
+    for (const auto& row : result1) {
         for (const auto& num : row) {
             cout << num << ' ';
         }
         cout << endl;
     }
+
 
     file.close();
     return 0;
@@ -81,6 +95,17 @@ std::vector<std::vector<int>> operationsOnMatrices(const std::vector<std::vector
         return matrixSubtraction(matrix1, matrix2);
     if (operation == "&")
         return multiplicationMatrixByNumber(matrix1, matrix2[0][0]);
+    if (operation == "*")
+        return matrixMultiplication(matrix1, matrix2);
+    if (operation == "T")
+        return matrixTranspose(matrix1);
+    /*if (operation == "det") {
+        std::vector<std::vector<int>> result;
+        result[0].push_back(matrixDeterminant(matrix1));
+        return result;
+    }*/
+    
+    return matrix1;
 }
 
 // Функция для сложения матриц
@@ -131,6 +156,126 @@ std::vector<std::vector<int>> multiplicationMatrixByNumber(const std::vector<std
     return result;
 }
 
+// Функция для умножения матриц
+std::vector<std::vector<int>> matrixMultiplication(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2) {
+    int numRows1 = matrix1.size();
+    int numCols1 = matrix1[0].size();
+    int numRows2 = matrix2.size();
+    int numCols2 = matrix2[0].size();
+
+    std::vector<std::vector<int>> result(numRows1, std::vector<int>(numCols2));
+
+    for (int i = 0; i < numRows1; i++) {
+        for (int j = 0; j < numCols2; j++) {
+            int sum = 0;
+            for (int k = 0; k < numCols1; k++) {
+                sum += matrix1[i][k] * matrix2[k][j];
+            }
+            result[i][j] = sum;
+        }
+    }
+
+    return result;
+}
+
+// Функция для транспонирования матрицы
+std::vector<std::vector<int>> matrixTranspose(const std::vector<std::vector<int>>& matrix) {
+    int numRows = matrix.size();
+    int numCols = matrix[0].size();
+
+    std::vector<std::vector<int>> result(numCols, std::vector<int>(numRows));
+
+    for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j < numCols; j++) {
+            result[j][i] = matrix[i][j];
+        }
+    }
+
+    return result;
+}
+
+// Функция для нахождения определителя матрицы
+double matrixDeterminant(const std::vector<std::vector<int>>& matrix) {
+    int n = matrix.size();
+
+    // Базовый случай: матрица 1x1
+    if (n == 1) {
+        return matrix[0][0];
+    }
+
+    double determinant = 0;
+
+    // Разложение по первой строке
+    for (int j = 0; j < n; j++) {
+        // Вычисление алгебраического дополнения
+        std::vector<std::vector<int>> minor(n - 1, std::vector<int>(n - 1));
+        for (int i = 1; i < n; i++) {
+            int k = 0;
+            for (int l = 0; l < n; l++) {
+                if (l != j) {
+                    minor[i - 1][k] = matrix[i][l];
+                    k++;
+                }
+            }
+        }
+
+        // Рекурсивно вычисляем определитель минора
+        double minorDeterminant = matrixDeterminant(minor);
+
+        // Вычисляем алгебраическое дополнение
+        int sign = (j % 2 == 0) ? 1 : -1;
+
+        // Обновляем определитель
+        determinant += sign * matrix[0][j] * minorDeterminant;
+    }
+
+    return determinant;
+}
+
+// Функция для нахождения обратной матрицы
+vector<vector<double>> matrixInverse(const vector<vector<int>>& matrix) {
+    int size = matrix.size();
+
+    double determinant = matrixDeterminant(matrix);
+
+    if (determinant == 0.0) {
+        cerr << "Матрица вырожденная. Обратной матрицы не существует." << endl;
+        exit(1);
+    }
+
+    vector<vector<double>> cofactorMatrix(size, vector<double>(size, 0.0));
+
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            vector<vector<int>> minor(size - 1, vector<int>(size - 1, 0.0));
+            int row = 0;
+            for (int k = 0; k < size; k++) {
+                if (k != i) {
+                    int col = 0;
+                    for (int l = 0; l < size; l++) {
+                        if (l != j) {
+                            minor[row][col] = matrix[k][l];
+                            col++;
+                        }
+                    }
+                    row++;
+                }
+            }
+            cofactorMatrix[i][j] = pow(-1, i + j) * matrixDeterminant(minor);
+        }
+    }
+
+    vector<vector<double>> inverseMatrix(size, vector<double>(size, 0.0));
+
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            inverseMatrix[i][j] = cofactorMatrix[j][i] / determinant;
+        }
+    }
+
+    return inverseMatrix;
+}
+
 // Функция для чтения матрицы из файла
 vector<vector<int>> readMatrixFromFile(ifstream& file) {
     vector<vector<int>> matrix;
@@ -158,6 +303,13 @@ ErrorCode isMatrixCorrect(const std::vector<std::vector<int>>& matrix1, const st
     // Проверка на то, введена ли хотя бы одна матрица и операция
     if (matrix1.empty() || operation.empty()) {
         return ErrorCode::IncorrectInputData;
+    }
+
+    // Проверка на количество матриц во входных данных
+    if (operation == "T" || operation == "det" || operation == "^-1") {
+        if (!matrix2[0].empty()) {
+            return ErrorCode::NumberOfMatricesNotCorrespondOperation;
+        }
     }
 
      // Проверка на размерность матриц
