@@ -15,7 +15,7 @@ int main() {
         return 1;
     }
 
-    vector<vector<int>> matrix1, matrix2;
+    vector<vector<double>> matrix1, matrix2;
     string operation;
     int counter = 0;
 
@@ -62,20 +62,10 @@ int main() {
         return 0;
     }
 
-    vector<vector<int>> result = operationsOnMatrices(matrix1, matrix2, operation);
-
-    if (operation == "det") {
-        double result = matrixDeterminant(matrix1);
-        cout << result << endl;
-        return 0;
-    }
-
-    vector<vector<double>> result1;
-    if (operation == "^-1")
-        result1 = matrixInverse(matrix1);
+    vector<vector<double>> result = operationsOnMatrices(matrix1, matrix2, operation);
 
     cout << "Result:" << endl;
-    for (const auto& row : result1) {
+    for (const auto& row : result) {
         for (const auto& num : row) {
             cout << num << ' ';
         }
@@ -88,7 +78,7 @@ int main() {
 }
 
 // Функция для выполнения действий над матрицами
-std::vector<std::vector<int>> operationsOnMatrices(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2, std::string operation) {
+std::vector<std::vector<double>> operationsOnMatrices(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2, std::string operation) {
     if (operation == "+")
         return matrixAddition(matrix1, matrix2);
     if (operation == "-")
@@ -99,21 +89,24 @@ std::vector<std::vector<int>> operationsOnMatrices(const std::vector<std::vector
         return matrixMultiplication(matrix1, matrix2);
     if (operation == "T")
         return matrixTranspose(matrix1);
-    /*if (operation == "det") {
-        std::vector<std::vector<int>> result;
-        result[0].push_back(matrixDeterminant(matrix1));
+    if (operation == "det") {
+        double determinant = matrixDeterminant(matrix1);
+        std::vector<std::vector<double>> result(1, std::vector<double>(1));
+        result[0][0] = determinant;
         return result;
-    }*/
+    }
+    if (operation == "^-1")
+        return matrixInverse(matrix1);
     
     return matrix1;
 }
 
 // Функция для сложения матриц
-std::vector<std::vector<int>> matrixAddition(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2) {
+std::vector<std::vector<double>> matrixAddition(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2) {
     int numRows = matrix1.size();
     int numCols = matrix1[0].size();
 
-    std::vector<std::vector<int>> result(numRows, std::vector<int>(numCols));
+    std::vector<std::vector<double>> result(numRows, std::vector<double>(numCols));
 
     for (int i = 0; i < numRows; i++) {
         for (int j = 0; j < numCols; j++) {
@@ -125,11 +118,11 @@ std::vector<std::vector<int>> matrixAddition(const std::vector<std::vector<int>>
 }
 
 // Функция для вычитания матриц
-std::vector<std::vector<int>> matrixSubtraction(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2) {
+std::vector<std::vector<double>> matrixSubtraction(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2) {
     int numRows = matrix1.size();
     int numCols = matrix1[0].size();
 
-    std::vector<std::vector<int>> result(numRows, std::vector<int>(numCols));
+    std::vector<std::vector<double>> result(numRows, std::vector<double>(numCols));
 
     for (int i = 0; i < numRows; i++) {
         for (int j = 0; j < numCols; j++) {
@@ -141,11 +134,11 @@ std::vector<std::vector<int>> matrixSubtraction(const std::vector<std::vector<in
 }
 
 // Функция для умножения матрицы на число
-std::vector<std::vector<int>> multiplicationMatrixByNumber(const std::vector<std::vector<int>>& matrix, int number) {
+std::vector<std::vector<double>> multiplicationMatrixByNumber(const std::vector<std::vector<double>>& matrix, double number) {
     int numRows = matrix.size();
     int numCols = matrix[0].size();
 
-    std::vector<std::vector<int>> result(numRows, std::vector<int>(numCols));
+    std::vector<std::vector<double>> result(numRows, std::vector<double>(numCols));
 
     for (int i = 0; i < numRows; i++) {
         for (int j = 0; j < numCols; j++) {
@@ -157,17 +150,17 @@ std::vector<std::vector<int>> multiplicationMatrixByNumber(const std::vector<std
 }
 
 // Функция для умножения матриц
-std::vector<std::vector<int>> matrixMultiplication(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2) {
+std::vector<std::vector<double>> matrixMultiplication(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2) {
     int numRows1 = matrix1.size();
     int numCols1 = matrix1[0].size();
     int numRows2 = matrix2.size();
     int numCols2 = matrix2[0].size();
 
-    std::vector<std::vector<int>> result(numRows1, std::vector<int>(numCols2));
+    std::vector<std::vector<double>> result(numRows1, std::vector<double>(numCols2));
 
     for (int i = 0; i < numRows1; i++) {
         for (int j = 0; j < numCols2; j++) {
-            int sum = 0;
+            double sum = 0;
             for (int k = 0; k < numCols1; k++) {
                 sum += matrix1[i][k] * matrix2[k][j];
             }
@@ -179,11 +172,11 @@ std::vector<std::vector<int>> matrixMultiplication(const std::vector<std::vector
 }
 
 // Функция для транспонирования матрицы
-std::vector<std::vector<int>> matrixTranspose(const std::vector<std::vector<int>>& matrix) {
+std::vector<std::vector<double>> matrixTranspose(const std::vector<std::vector<double>>& matrix) {
     int numRows = matrix.size();
     int numCols = matrix[0].size();
 
-    std::vector<std::vector<int>> result(numCols, std::vector<int>(numRows));
+    std::vector<std::vector<double>> result(numCols, std::vector<double>(numRows));
 
     for (int i = 0; i < numRows; i++) {
         for (int j = 0; j < numCols; j++) {
@@ -195,7 +188,7 @@ std::vector<std::vector<int>> matrixTranspose(const std::vector<std::vector<int>
 }
 
 // Функция для нахождения определителя матрицы
-double matrixDeterminant(const std::vector<std::vector<int>>& matrix) {
+double matrixDeterminant(const std::vector<std::vector<double>>& matrix) {
     int n = matrix.size();
 
     // Базовый случай: матрица 1x1
@@ -208,7 +201,7 @@ double matrixDeterminant(const std::vector<std::vector<int>>& matrix) {
     // Разложение по первой строке
     for (int j = 0; j < n; j++) {
         // Вычисление алгебраического дополнения
-        std::vector<std::vector<int>> minor(n - 1, std::vector<int>(n - 1));
+        std::vector<std::vector<double>> minor(n - 1, std::vector<double>(n - 1));
         for (int i = 1; i < n; i++) {
             int k = 0;
             for (int l = 0; l < n; l++) {
@@ -233,13 +226,13 @@ double matrixDeterminant(const std::vector<std::vector<int>>& matrix) {
 }
 
 // Функция для нахождения обратной матрицы
-vector<vector<double>> matrixInverse(const vector<vector<int>>& matrix) {
+vector<vector<double>> matrixInverse(const vector<vector<double>>& matrix) {
     int size = matrix.size();
 
     double determinant = matrixDeterminant(matrix);
 
     if (determinant == 0.0) {
-        cerr << "Матрица вырожденная. Обратной матрицы не существует." << endl;
+        cout << "Матрица вырожденная. Обратной матрицы не существует." << endl;
         exit(1);
     }
 
@@ -247,7 +240,7 @@ vector<vector<double>> matrixInverse(const vector<vector<int>>& matrix) {
 
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            vector<vector<int>> minor(size - 1, vector<int>(size - 1, 0.0));
+            vector<vector<double>> minor(size - 1, vector<double>(size - 1, 0.0));
             int row = 0;
             for (int k = 0; k < size; k++) {
                 if (k != i) {
@@ -277,21 +270,21 @@ vector<vector<double>> matrixInverse(const vector<vector<int>>& matrix) {
 }
 
 // Функция для чтения матрицы из файла
-vector<vector<int>> readMatrixFromFile(ifstream& file) {
-    vector<vector<int>> matrix;
+vector<vector<double>> readMatrixFromFile(ifstream& file) {
+    vector<vector<double>> matrix;
     string line;
     while (getline(file, line) && !line.empty()) {
-        vector<int> row = splitStringToInt(line);
+        vector<double> row = splitStringToInt(line);
         matrix.push_back(row);
     }
     return matrix;
 }
 
 // Функция для разделения строки на числа
-vector<int> splitStringToInt(const string& str) {
-    vector<int> row;
+vector<double> splitStringToInt(const string& str) {
+    vector<double> row;
     stringstream ss(str);
-    int num;
+    double num;
     while (ss >> num) {
         row.push_back(num);
     }
@@ -299,7 +292,7 @@ vector<int> splitStringToInt(const string& str) {
 }
 
 // Функция для проверки матриц на корректность
-ErrorCode isMatrixCorrect(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2, std::string operation) {
+ErrorCode isMatrixCorrect(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2, std::string operation) {
     // Проверка на то, введена ли хотя бы одна матрица и операция
     if (matrix1.empty() || operation.empty()) {
         return ErrorCode::IncorrectInputData;
@@ -362,7 +355,7 @@ ErrorCode isMatrixCorrect(const std::vector<std::vector<int>>& matrix1, const st
 }
 
 // Функция для проверки размера матрицы
-bool isMatrixSizeInvalid(const std::vector<std::vector<int>>& matrix) {
+bool isMatrixSizeInvalid(const std::vector<std::vector<double>>& matrix) {
     int numRows = matrix.size();
     int numCols = matrix[0].size();
     return numRows > 50 || numCols > 50 || numRows == 0;
@@ -370,7 +363,7 @@ bool isMatrixSizeInvalid(const std::vector<std::vector<int>>& matrix) {
 
 
 // Функция для проверки строк матрицы на присутствие всех чисел
-bool hasMissingNumbers(const std::vector<std::vector<int>>& matrix) {
+bool hasMissingNumbers(const std::vector<std::vector<double>>& matrix) {
     int expectedCount = matrix.size() * matrix[0].size();
     for (const auto& row : matrix) {
         if (row.size() != matrix[0].size()) {
@@ -392,7 +385,7 @@ bool isOperationInvalid(const std::string& operation) {
 }
 
 // Функция для проверки идентичности размерностей матриц
-bool areMatricesSameSize(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2) {
+bool areMatricesSameSize(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2) {
     int numRows1 = matrix1.size();
     int numCols1 = matrix1[0].size();
     int numRows2 = matrix2.size();
@@ -402,7 +395,7 @@ bool areMatricesSameSize(const std::vector<std::vector<int>>& matrix1, const std
 }
 
 // Функция для проверки возможности умножения двух матриц
-bool areMatricesMultiplicable(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2) {
+bool areMatricesMultiplicable(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2) {
     int numCols1 = matrix1[0].size();
     int numRows2 = matrix2.size();
 
@@ -410,12 +403,12 @@ bool areMatricesMultiplicable(const std::vector<std::vector<int>>& matrix1, cons
 }
 
 // Функция для проверки возможности умножения матрицы на число
-bool abilityToMulMatrixByNumber(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2) {
+bool abilityToMulMatrixByNumber(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2) {
     return (matrix1[0].size() > 1 || matrix1.size() > 1) && matrix2[0].size() == 1 && matrix2.size() == 1;
 }
 
 // Функция для проверки матрицы на то, является ли она квадратом
-bool isMatrixSquare(const std::vector<std::vector<int>>& matrix) {
+bool isMatrixSquare(const std::vector<std::vector<double>>& matrix) {
     int numRows = matrix.size();
     int numCols = matrix[0].size();
     return numRows == numCols;
