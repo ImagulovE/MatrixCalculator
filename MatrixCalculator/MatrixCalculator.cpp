@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -182,6 +182,12 @@ vector<vector<double>> matrixTranspose(const vector<vector<double>>& matrix) {
 // Функция для нахождения определителя матрицы
 double matrixDeterminant(const vector<vector<double>>& matrix) {
     int n = matrix.size();
+
+    // Базовый случай: матрица 1x1
+    if (n == 1) {
+        return matrix[0][0];
+    }
+
     double determinant = 0;
 
     // Разложение по первой строке
@@ -248,7 +254,7 @@ vector<vector<double>> matrixInverse(const vector<vector<double>>& matrix) {
 
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            inverseMatrix[i][j] = cofactorMatrix[j][i] / determinant;
+            inverseMatrix[i][j] = round(cofactorMatrix[j][i] / determinant * 100) / 100;
         }
     }
 
