@@ -182,36 +182,38 @@ vector<vector<double>> matrixTranspose(const vector<vector<double>>& matrix) {
 // Функция для нахождения определителя матрицы
 double matrixDeterminant(const vector<vector<double>>& matrix) {
     int n = matrix.size();
+    double determinant = 1.0;
+    const double EPSILON = 1e-9;
+    vector<vector<double>> matrixCopy = matrix;
 
-    // Базовый случай: матрица 1x1
-    if (n == 1) {
-        return matrix[0][0];
-    }
-
-    double determinant = 0;
-
-    // Разложение по первой строке
-    for (int j = 0; j < n; j++) {
-        // Вычисление алгебраического дополнения
-        vector<vector<double>> minor(n - 1, vector<double>(n - 1));
-        for (int i = 1; i < n; i++) {
-            int k = 0;
-            for (int l = 0; l < n; l++) {
-                if (l != j) {
-                    minor[i - 1][k] = matrix[i][l];
-                    k++;
-                }
-            }
+    // Приведение матрицы к треугольному виду методом Гаусса
+    for (int i = 0; i < n; i++) {
+        int maxRow = i;
+        for (int j = i + 1; j < n; j++) {
+            if (abs(matrixCopy[j][i]) > abs(matrixCopy[maxRow][i]))
+                maxRow = j;
         }
 
-        // Рекурсивно вычисляем определитель минора
-        double minorDeterminant = matrixDeterminant(minor);
+        if (abs(matrix[maxRow][i]) < EPSILON) {
+            // Матрица вырожденная
+            determinant = 0.0;
+            break;
+        }
 
-        // Вычисляем алгебраическое дополнение
-        int sign = (j % 2 == 0) ? 1 : -1;
+        if (maxRow != i) {
+            // Обмен строк, если максимальный элемент не на главной диагонали
+            swap(matrixCopy[i], matrixCopy[maxRow]);
+            determinant *= -1.0;
+        }
 
-        // Обновляем определитель
-        determinant += sign * matrix[0][j] * minorDeterminant;
+        determinant *= matrixCopy[i][i]; // Добавляем элемент главной диагонали к определителю
+
+        for (int j = i + 1; j < n; j++) {
+            double ratio = matrixCopy[j][i] / matrixCopy[i][i];
+            for (int k = i; k < n; k++) {
+                matrixCopy[j][k] -= ratio * matrixCopy[i][k];
+            }
+        }
     }
 
     return determinant;
